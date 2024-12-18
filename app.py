@@ -44,8 +44,8 @@ A9 = st.selectbox("Does your child use simple gestures? (e.g. wave goodbye) ", [
 A10 = st.selectbox(
     "Does your child stare at nothing with no apparent purpose? ", [0, 1]
 )
-Age_Mons = st.slider("Age", 0, 100)
-QchatScore = st.number_input("total score of qchat")
+Age_Mons = st.slider("Age of your child in months ", 0, 100)
+QchatScore = A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8 + A9 + A10
 Ethnicity = st.selectbox("Ethnicity", label_encoder_ethnicity.categories_[0])
 Sex = st.selectbox("Sex if male -1 , female is  0", [0, 1])
 Jaundice = st.selectbox("has Jaundice", label_encoder_jaundice.classes_)
@@ -93,6 +93,6 @@ prediction_proba = prediction[0][0]
 st.write(f"asd Probability: {prediction_proba:.2f}")
 
 if prediction_proba > 0.5:
-    st.write("The customer is likely to asd.")
+    st.write("The child has likely to have asd.")
 else:
-    st.write("The customer is not likely to asd.")
+    st.write("The child has not likely to have asd..")
