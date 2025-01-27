@@ -109,7 +109,7 @@ data = {
 }
 
 # Convert the data into a DataFrame
-df = pd.DataFrame(data, index=["Accuracy score", "F1-Score", "Recall Score", ""])
+df = pd.DataFrame(data, index=["Accuracy score", "F1-Score", "Recall Score"])
 
 # Streamlit app
 st.title("Comparison Table of Machine Learning Models")
