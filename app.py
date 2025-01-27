@@ -114,6 +114,7 @@
 # # Streamlit app
 # st.title("Comparison Table of Machine Learning Models")
 # st.table(df)
+
 import streamlit as st
 import numpy as np
 import tensorflow as tf
@@ -141,7 +142,7 @@ with open("scaler.pkl", "rb") as file:
 # Streamlit app
 st.title("ASD Prediction (0 - No, 1 - Yes)")
 
-# Define a function for Yes/No inputs
+# Define a function for Yes/No input
 def yes_no_input(question):
     response = st.radio(question, ["Yes", "No"])
     return 1 if response == "Yes" else 0
@@ -149,34 +150,44 @@ def yes_no_input(question):
 # Collect user inputs
 A1 = yes_no_input("Does your child look at you when you call his/her name?")
 A2 = yes_no_input("How easy is it for you to get eye contact with your child?")
-A3 = yes_no_input("Does your child point to indicate that s/he wants something?")
+A3 = yes_no_input("Does your child point to indicate that s/he wants something? e.g., a toy that is out of reach?")
 A4 = yes_no_input("Does your child point to share interest with you?")
 A5 = yes_no_input("Does your child pretend?")
 A6 = yes_no_input("Does your child follow where you’re looking?")
 A7 = yes_no_input("If someone in the family is upset, does your child comfort them?")
 A8 = yes_no_input("Would you describe your child’s first words as normal?")
-A9 = yes_no_input("Does your child use simple gestures (e.g., wave goodbye)?")
-A10 = yes_no_input("Does your child stare at nothing with no purpose?")
+A9 = yes_no_input("Does your child use simple gestures? (e.g., wave goodbye)")
+A10 = yes_no_input("Does your child stare at nothing with no apparent purpose?")
 Age_Mons = st.slider("Age of your child in months:", 0, 100)
 QchatScore = A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8 + A9 + A10
 Ethnicity = st.selectbox("Ethnicity", label_encoder_ethnicity.categories_[0])
-Sex = st.selectbox("Sex if male -1 , female is  0", [0, 1])
-Jaundice = st.selectbox("has Jaundice", label_encoder_jaundice.classes_)
-Family_mem_with_ASD = st.selectbox("is family member has asd no -0 , yes 1", [0, 1])
+Sex = st.selectbox("Sex (0 for Female, 1 for Male):", [0, 1])
+Jaundice = st.selectbox("Has Jaundice:", label_encoder_jaundice.classes_)
+Family_mem_with_ASD = yes_no_input("Does any family member have ASD?")
 
-# Process inputs for the model
+# Prepare input data
 input_data = pd.DataFrame({
     "A1": [A1], "A2": [A2], "A3": [A3], "A4": [A4], "A5": [A5],
     "A6": [A6], "A7": [A7], "A8": [A8], "A9": [A9], "A10": [A10],
     "Age_Mons": [Age_Mons],
     "Qchat-10-Score": [QchatScore],
-     "Sex": [Sex],
-        "Jaundice": [label_encoder_jaundice.transform([Jaundice])[0]],
-        "Family_mem_with_ASD": [Family_mem_with_ASD],
+    "Sex": [Sex],
+    "Jaundice": [label_encoder_jaundice.transform([Jaundice])[0]],
+    "Family_mem_with_ASD": [Family_mem_with_ASD]
 })
 
-# Prediction logic (unchanged)
+geo_encoded = label_encoder_ethnicity.transform([[Ethnicity]]).toarray()
+geo_encoded_df = pd.DataFrame(
+    geo_encoded, columns=label_encoder_ethnicity.get_feature_names_out(["Ethnicity"])
+)
+
+# Combine one-hot encoded columns with input data
+input_data = pd.concat([input_data.reset_index(drop=True), geo_encoded_df], axis=1)
+
+# Scale the input data
 input_data_scaled = scaler.transform(input_data)
+
+# Prediction
 prediction = model.predict(input_data_scaled)
 prediction_proba = prediction[0][0]
 
@@ -186,14 +197,14 @@ if prediction_proba > 0.5:
 else:
     st.write("The child is unlikely to have ASD.")
 
-# Comparison Table (unchanged)
+# Comparison Table
 data = {
     "s.no": [1, 2, 3],
     "ANN": ["0.875", "0.7126436781609196", "0.775"],
     "SVC": ["0.895", "0.7529411764705882", "0.8"],
     "Random Forest": ["0.815", "0.6542056074766355", "0.875"],
     "Decision Tree": ["0.875", "0.6575342465753424", "0.6"],
-    "Logistic Regression": ["0.88", "0.7", "0.7"]
+    "Logistic Regression": ["0.88", "0.7", "0.7"],
 }
 
 df = pd.DataFrame(data, index=["Accuracy score", "F1-Score", "Recall Score"])
