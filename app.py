@@ -96,3 +96,21 @@ if prediction_proba > 0.5:
     st.write("The child has likely to have asd.")
 else:
     st.write("The child has not likely to have asd..")
+
+
+
+data = {
+    "s.no": [1, 2, 3, 4],
+    "ANN": ["0.875", "0.7126436781609196", "0.775", ""],
+    "SVC": ["0.895", "0.7529411764705882", "0.8", ""],
+    "Random Forest": ["0.815", "0.6542056074766355", "0.875", ""],
+    "Decision Tree": ["0.875", "0.6575342465753424", "0.6", ""],
+    "Logistic Regression": ["0.88", "0.7", "0.7", ""],
+}
+
+# Convert the data into a DataFrame
+df = pd.DataFrame(data, index=["Accuracy score", "F1-Score", "Recall Score", ""])
+
+# Streamlit app
+st.title("Comparison Table of Machine Learning Models")
+st.table(df)
