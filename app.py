@@ -159,10 +159,10 @@ A9 = yes_no_input("Does your child use simple gestures (e.g., wave goodbye)?")
 A10 = yes_no_input("Does your child stare at nothing with no purpose?")
 Age_Mons = st.slider("Age of your child in months:", 0, 100)
 QchatScore = A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8 + A9 + A10
-Ethnicity = st.selectbox("Ethnicity", label_encoder_ethnicity.categories_[0])
-Sex = st.radio("Sex", ["Male", "Female"])
-Jaundice = st.radio("Has Jaundice?", ["Yes", "No"])
-Family_mem_with_ASD = yes_no_input("Does any family member have ASD?")
+ Ethnicity = st.selectbox("Ethnicity", label_encoder_ethnicity.categories_[0])
+Sex = st.selectbox("Sex if male -1 , female is  0", [0, 1])
+Jaundice = st.selectbox("has Jaundice", label_encoder_jaundice.classes_)
+Family_mem_with_ASD = st.selectbox("is family member has asd no -0 , yes 1", [0, 1])
 
 # Process inputs for the model
 input_data = pd.DataFrame({
@@ -170,18 +170,13 @@ input_data = pd.DataFrame({
     "A6": [A6], "A7": [A7], "A8": [A8], "A9": [A9], "A10": [A10],
     "Age_Mons": [Age_Mons],
     "Qchat-10-Score": [QchatScore],
-    "Sex": [1 if Sex == "Male" else 0],
-    "Jaundice": [1 if Jaundice == "Yes" else 0],
-    "Family_mem_with_ASD": [Family_mem_with_ASD]
+     "Sex": [Sex],
+        "Jaundice": [label_encoder_jaundice.transform([Jaundice])[0]],
+        "Family_mem_with_ASD": [Family_mem_with_ASD],
 })
 
-ethnicity_encoded = label_encoder_ethnicity.transform([Ethnicity]).reshape(1, -1)
-input_data = pd.concat([input_data, pd.DataFrame(ethnicity_encoded)], axis=1)
-
-# Scale the input data
+# Prediction logic (unchanged)
 input_data_scaled = scaler.transform(input_data)
-
-# Prediction
 prediction = model.predict(input_data_scaled)
 prediction_proba = prediction[0][0]
 
@@ -191,7 +186,7 @@ if prediction_proba > 0.5:
 else:
     st.write("The child is unlikely to have ASD.")
 
-# Comparison Table
+# Comparison Table (unchanged)
 data = {
     "s.no": [1, 2, 3],
     "ANN": ["0.875", "0.7126436781609196", "0.775"],
