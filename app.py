@@ -206,6 +206,10 @@ data = {
     "Logistic Regression": ["0.88", "0.7", "0.7"],
 }
 
-df = pd.DataFrame(data, index=["Accuracy score", "F1-Score", "Recall Score"])
+# Create DataFrame
+df = pd.DataFrame(data, index=["Accuracy Score", "F1-Score", "Recall Score"])
+
+# Streamlit App
 st.title("Comparison Table of Machine Learning Models")
+st.write("This table compares various models based on Accuracy, F1-Score, and Recall.")
 st.table(df)
