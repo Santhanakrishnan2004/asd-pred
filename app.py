@@ -140,7 +140,7 @@ with open("scaler.pkl", "rb") as file:
     scaler = pickle.load(file)
 
 # Streamlit app
-st.title("ASD Prediction (0 - No, 1 - Yes)")
+st.title("ASD Prediction System leveraging Artificial Neural Networks (ANN) using the Q-CHAT checklist.")
 
 # Define a function for Yes/No input
 def yes_no_input(question):
